@@ -1,5 +1,5 @@
 import { useRouter } from "next/router"
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 
 import { useAccountState } from "@crossbell/connect-kit"
 
@@ -7,7 +7,7 @@ import { BlockchainInfo } from "~/components/common/BlockchainInfo"
 import { Style } from "~/components/common/Style"
 import { useCustomcss } from "~/hooks/useCustomCss"
 import { useUserRole } from "~/hooks/useUserRole"
-import { IS_BROWSER, IS_PROD } from "~/lib/constants"
+import { IS_PROD } from "~/lib/constants"
 import { OUR_DOMAIN, SITE_URL } from "~/lib/env"
 import { getUserContentsUrl } from "~/lib/user-contents"
 import { cn } from "~/lib/utils"
@@ -76,6 +76,10 @@ export const SiteLayout: React.FC<SiteLayoutProps> = ({
     }
   }, [site.isSuccess, site.data])
 
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   return (
     <div
       className={cn(
@@ -105,13 +109,12 @@ export const SiteLayout: React.FC<SiteLayoutProps> = ({
         icon={getUserContentsUrl(site.data?.metadata?.content?.avatars?.[0])}
         site={domainOrSubdomain}
       />
-      <Style
-        content={
-          IS_BROWSER && isPreviewCss
-            ? previewCss
-            : site.data?.metadata?.content?.css
-        }
-      />
+      {mounted && isPreviewCss ? (
+        <style>{previewCss}</style>
+      ) : (
+        <Style content={site.data?.metadata?.content?.css} />
+      )}
+
       {site.data && <SiteHeader site={site.data} />}
       <div
         className={cn(
