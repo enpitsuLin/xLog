@@ -34,27 +34,37 @@ export const useCustomcss = () => {
   const channel = useMemo(() => new BroadcastChannel("xlog-custom-css"), [])
   const [lastUpdate, setLastUpdate] = useState(Date.now())
   const store = useCustomCssStore()
+  const [externalUpdate, setExternalUpdate] = useState(false)
 
-  const upChannelMessage = (
-    e: MessageEvent<Pick<ICustomCssStore, "css"> & { timestamap: number }>,
+  const onChannelMessage = (
+    e: MessageEvent<Pick<ICustomCssStore, "css"> & { timestamp: number }>,
   ) => {
-    if (lastUpdate !== e.data.timestamap) {
-      store.setCss(e.data.css)
-      setLastUpdate(e.data.timestamap)
+    if (typeof e.data === "undefined") {
+      channel.postMessage({ timestamp: lastUpdate, css: store.css })
+      return
     }
+    if (e.data.timestamp <= lastUpdate) return
+
+    setExternalUpdate(true)
+    useCustomCssStore.setState({ css: e.data.css })
+    setLastUpdate(e.data.timestamp)
   }
 
   useEffect(() => {
     const cleanup = useCustomCssStore.subscribe(
       (state) => state.css,
       (css) => {
-        channel.postMessage({ timestamap: Date.now(), css })
+        if (!externalUpdate) {
+          const timestamp = Date.now()
+          channel.postMessage({ timestamp, css })
+        }
+        setExternalUpdate(false)
       },
     )
-    channel.addEventListener("message", upChannelMessage)
+    channel.addEventListener("message", onChannelMessage)
     return () => {
       cleanup()
-      channel.removeEventListener("message", upChannelMessage)
+      channel.removeEventListener("message", onChannelMessage)
       channel.close()
     }
   }, [])
