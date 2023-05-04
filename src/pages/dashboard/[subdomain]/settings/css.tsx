@@ -1,3 +1,4 @@
+import { useDebounceFn } from "ahooks"
 import { GetServerSideProps } from "next"
 import { useTranslation } from "next-i18next"
 import { useRouter } from "next/router"
@@ -43,6 +44,7 @@ export default function SettingsCSSPage() {
       css: css,
     })
   }
+  const updatePreviewCss = useDebounceFn(setCss, { wait: 1000 })
 
   const onPreviewClick = useCallback(
     (e: MouseEvent) => {
@@ -125,7 +127,7 @@ export default function SettingsCSSPage() {
             className="w-full h-96 border outline-none py-3 rounded-lg inline-flex items-center overflow-hidden"
             defaultLanguage="css"
             defaultValue={css}
-            onChange={(value) => setCss(value || "")}
+            onChange={(value) => updatePreviewCss.run(value || "")}
             options={{
               fontSize: 14,
               minimap: { enabled: false },
