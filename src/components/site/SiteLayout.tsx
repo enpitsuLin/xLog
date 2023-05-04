@@ -7,7 +7,7 @@ import { BlockchainInfo } from "~/components/common/BlockchainInfo"
 import { Style } from "~/components/common/Style"
 import { useCustomcss } from "~/hooks/useCustomCss"
 import { useUserRole } from "~/hooks/useUserRole"
-import { IS_PROD } from "~/lib/constants"
+import { IS_PROD, IS_VERCEL_PREVIEW } from "~/lib/constants"
 import { OUR_DOMAIN, SITE_URL } from "~/lib/env"
 import { getUserContentsUrl } from "~/lib/user-contents"
 import { cn } from "~/lib/utils"
@@ -69,7 +69,8 @@ export const SiteLayout: React.FC<SiteLayoutProps> = ({
       if (
         window.location.host.split(".").slice(-2).join(".") !== OUR_DOMAIN &&
         window.location.host !== site.data?.metadata?.content?.custom_domain &&
-        IS_PROD
+        IS_PROD &&
+        !IS_VERCEL_PREVIEW
       ) {
         window.location.href = SITE_URL
       }
