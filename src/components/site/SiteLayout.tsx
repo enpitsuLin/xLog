@@ -5,8 +5,9 @@ import { useAccountState } from "@crossbell/connect-kit"
 
 import { BlockchainInfo } from "~/components/common/BlockchainInfo"
 import { Style } from "~/components/common/Style"
+import { useCustomcss } from "~/hooks/useCustomCss"
 import { useUserRole } from "~/hooks/useUserRole"
-import { IS_PROD } from "~/lib/constants"
+import { IS_BROWSER, IS_PROD } from "~/lib/constants"
 import { OUR_DOMAIN, SITE_URL } from "~/lib/env"
 import { getUserContentsUrl } from "~/lib/user-contents"
 import { cn } from "~/lib/utils"
@@ -60,6 +61,8 @@ export const SiteLayout: React.FC<SiteLayoutProps> = ({
     characterId: page.data?.characterId,
     noteId: page.data?.noteId,
   })
+  const { css: previewCss } = useCustomcss()
+  const isPreviewCss = router.query["preview-css"] === "true"
 
   useEffect(() => {
     if (site.data) {
@@ -102,7 +105,13 @@ export const SiteLayout: React.FC<SiteLayoutProps> = ({
         icon={getUserContentsUrl(site.data?.metadata?.content?.avatars?.[0])}
         site={domainOrSubdomain}
       />
-      <Style content={site.data?.metadata?.content?.css} />
+      <Style
+        content={
+          IS_BROWSER && isPreviewCss
+            ? previewCss
+            : site.data?.metadata?.content?.css
+        }
+      />
       {site.data && <SiteHeader site={site.data} />}
       <div
         className={cn(

@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next"
 import { useTranslation } from "next-i18next"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { MouseEvent, useCallback, useEffect, useState } from "react"
 import type { ReactElement } from "react"
 import toast from "react-hot-toast"
 
@@ -35,7 +35,6 @@ export default function SettingsCSSPage() {
   const site = useGetSite(subdomain)
   const { t } = useTranslation("dashboard")
 
-  // const [css, setCss] = useState("")
   const { css, setCss } = useCustomcss()
   const handleSubmit = (e: any) => {
     e.preventDefault()
@@ -44,6 +43,14 @@ export default function SettingsCSSPage() {
       css: css,
     })
   }
+
+  const onPreviewClick = useCallback(
+    (e: MouseEvent) => {
+      e.preventDefault()
+      window.open(`/_site/${subdomain}?preview-css=true`)
+    },
+    [subdomain],
+  )
 
   useEffect(() => {
     if (updateSite.isSuccess) {
@@ -125,9 +132,16 @@ export default function SettingsCSSPage() {
             }}
           />
         </div>
-        <div className="mt-5">
+        <div className="mt-5 space-x-2">
           <Button type="submit" isLoading={updateSite.isLoading}>
             {t("Save")}
+          </Button>
+          <Button
+            type="button"
+            isLoading={updateSite.isLoading}
+            onClick={onPreviewClick}
+          >
+            Preview
           </Button>
         </div>
       </form>
