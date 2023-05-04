@@ -22,7 +22,7 @@ const useCustomCssStore = create<ICustomCssStore>()(
       }),
       {
         name: CUSTOMCSS_SESSION_KEY,
-        storage: createJSONStorage(() => sessionStorage),
+        storage: createJSONStorage(() => localStorage),
       },
     ),
   ),
