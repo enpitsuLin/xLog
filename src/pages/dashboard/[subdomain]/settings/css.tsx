@@ -141,7 +141,7 @@ export default function SettingsCSSPage() {
             isLoading={updateSite.isLoading}
             onClick={onPreviewClick}
           >
-            Preview
+            {t("Preview")}
           </Button>
         </div>
       </form>
