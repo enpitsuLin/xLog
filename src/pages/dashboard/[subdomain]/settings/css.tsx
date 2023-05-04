@@ -11,6 +11,7 @@ import { getServerSideProps as getLayoutServerSideProps } from "~/components/das
 import { SettingsLayout } from "~/components/dashboard/SettingsLayout"
 import { Button } from "~/components/ui/Button"
 import { FieldLabel } from "~/components/ui/FieldLabel"
+import { useCustomcss } from "~/hooks/useCustomCss"
 import { serverSidePropsHandler } from "~/lib/server-side-props"
 import { useGetSite, useUpdateSite } from "~/queries/site"
 
@@ -34,7 +35,8 @@ export default function SettingsCSSPage() {
   const site = useGetSite(subdomain)
   const { t } = useTranslation("dashboard")
 
-  const [css, setCss] = useState("")
+  // const [css, setCss] = useState("")
+  const { css, setCss } = useCustomcss()
   const handleSubmit = (e: any) => {
     e.preventDefault()
     updateSite.mutate({
